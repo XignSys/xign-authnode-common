@@ -47,13 +47,15 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  *
  * @author palle
  */
+//TODO Add Util code to the node project
 public class Util {
 
     private static final Logger LOG = Logger.getLogger(Util.class.getName());
 
     private static final Gson GSON = new Gson();
 
-    public static SSLContext getSSLContext(X509Certificate cert) throws NoSuchAlgorithmException, KeyManagementException, IOException, CertificateException, KeyStoreException, NoSuchProviderException {
+    public static SSLContext getSSLContext(X509Certificate cert) throws NoSuchAlgorithmException,
+            KeyManagementException, IOException, CertificateException, KeyStoreException {
         KeyStore trustStore = KeyStore.getInstance("pkcs12", new BouncyCastleProvider());
         trustStore.load(null, null);
         trustStore.setCertificateEntry("1", cert);
@@ -71,7 +73,7 @@ public class Util {
         return SSLContext.getDefault();
     }
 
-    public static Map<String, String> getPropertyValue(String pathToFile, String[] keys) throws FileNotFoundException, IOException {
+    public static Map<String, String> getPropertyValue(String pathToFile, String[] keys) throws IOException {
         InputStream fin = new FileInputStream(pathToFile);
         Properties properties = new Properties();
         properties.load(fin);
@@ -79,7 +81,7 @@ public class Util {
 
         Map<String, String> result = new HashMap<>();
         for (String key : keys) {
-            result.put(key, (String) properties.getProperty(key));
+            result.put(key, properties.getProperty(key));
         }
 
         return result;
@@ -92,12 +94,9 @@ public class Util {
             throw new XignTokenException("received error response :" + tokenResponse.get("error").getAsString());
         }
 
-        ECDHDecrypter decrypter = null;
+        ECDHDecrypter decrypter;
         try {
             decrypter = new ECDHDecrypter((ECPrivateKey) keyStore.getKey(keyAlias, keyPassword.toCharArray()));
-        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException | JOSEException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            throw new XignTokenException("error building decrypter");
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new XignTokenException("error building decrypter");
@@ -173,11 +172,11 @@ public class Util {
     }
 
     private static X509Certificate validateCertificateChain(List<com.nimbusds.jose.util.Base64> chain) throws XignTokenException {
-        CertificateFactory cf = null;
+        CertificateFactory cf;
         try {
             cf = CertificateFactory.getInstance("X.509");
-            X509Certificate current = null;
-            X509Certificate next = null;
+            X509Certificate current;
+            X509Certificate next;
             for (int i = 0; i < chain.size(); i++) {
                 if ((i + 1) == (chain.size() - 1)) {
                     break;
