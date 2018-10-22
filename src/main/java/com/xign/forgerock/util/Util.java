@@ -12,7 +12,7 @@ import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.ECDHDecrypter;
 import com.nimbusds.jose.crypto.ECDSAVerifier;
-import com.xign.api.json.JWTClaims;
+import com.xign.xignmanager.common.JWTClaims;
 import com.xign.forgerock.exception.XignTokenException;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
