@@ -12,11 +12,10 @@ import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.ECDHDecrypter;
 import com.nimbusds.jose.crypto.ECDSAVerifier;
-import com.xign.xignmanager.common.JWTClaims;
+
 import com.xign.forgerock.exception.XignTokenException;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -26,7 +25,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -150,7 +148,12 @@ public class Util {
         }
 
         String jClaimsString = reqJws.getPayload().toString();
-        JWTClaims claims = GSON.fromJson(jClaimsString, JWTClaims.class);
+        JWTClaims claims = null;
+        try {
+            claims = GSON.fromJson(jClaimsString, JWTClaims.class);
+        }catch(Exception ex){
+            throw new XignTokenException(ex.getMessage());
+        }
         try {
 
             if (claims.getTransaction() != null) {
